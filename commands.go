@@ -30,9 +30,9 @@ var hostUuid = flag.String("host_uuid", "", "The UUID of the host (required).")
 const CommandName = "mm-ctl"
 
 func loadConfig() error {
-	midolmanConfigPath := flag.String("config", "/etc/midolman/midolman.conf",
+	midolmanConfigPath := flag.String("--config", "/etc/midolman/midolman.conf",
 		"The location of the Midolamn config file")
-	hostConfigPath := flag.String("host-config", "/etc/midolman/host_uuid.properties",
+	hostConfigPath := flag.String("--host-config", "/etc/midolman/host_uuid.properties",
 		"The location of the host UUID config file")
 	flag.Parse()
 
@@ -58,7 +58,7 @@ func loadConfig() error {
 type Binding struct{}
 
 func (b *Binding) Help() string {
-	return fmt.Sprintf(`Usage: %s bind c5951b28-0d72-41fa-9f29-650bbeae2ed3 8a1c0540-veth"
+	return fmt.Sprintf(`Usage: %s --bind-port c5951b28-0d72-41fa-9f29-650bbeae2ed3 8a1c0540-veth"
 
 binding takes the Neutron port UUID and the interface name and binds the port to
 the interface.
@@ -66,7 +66,7 @@ the interface.
 }
 
 func (b *Binding) Run(args []string) int {
-	bindCmdFlag := flag.NewFlagSet("bind", flag.ContinueOnError)
+	bindCmdFlag := flag.NewFlagSet("--bind-port", flag.ContinueOnError)
 	if *hostUuid == "" {
 		bindCmdFlag.StringVar(hostUuid, "host_uuid", "", "The UUID of the host (required).")
 	}
@@ -74,7 +74,7 @@ func (b *Binding) Run(args []string) int {
 	bindCmdFlag.Parse(args)
 
 	if bindCmdFlag.NArg() != 2 {
-		fmt.Fprintf(os.Stderr, "bind takes exactly 2 args but %d args are given.\n", bindCmdFlag.NArg())
+		fmt.Fprintf(os.Stderr, "--bind-port takes exactly 2 args but %d args are given.\n", bindCmdFlag.NArg())
 		return 1
 	}
 	portUuid := bindCmdFlag.Arg(0)
@@ -94,21 +94,21 @@ func (b *Binding) Run(args []string) int {
 }
 
 func (b *Binding) Synopsis() string {
-	return "bind <port-uuid> <interface-name>"
+	return "--bind-port <port-uuid> <interface-name>"
 }
 
 // The "unbinding" command.
 type Unbinding struct{}
 
 func (u *Unbinding) Help() string {
-	return fmt.Sprintf(`Usage: %s unbind c5951b28-0d72-41fa-9f29-650bbeae2ed3
+	return fmt.Sprintf(`Usage: %s --unbind-port c5951b28-0d72-41fa-9f29-650bbeae2ed3
 
 unbinding takes the Neutron port UUID and unbinds the port.
 `, CommandName)
 }
 
 func (u *Unbinding) Run(args []string) int {
-	unbindCmdFlag := flag.NewFlagSet("unbind", flag.ContinueOnError)
+	unbindCmdFlag := flag.NewFlagSet("--unbind-port", flag.ContinueOnError)
 	if *hostUuid == "" {
 		unbindCmdFlag.StringVar(hostUuid, "host_uuid", "", "The UUID of the host (required).")
 	}
@@ -116,7 +116,7 @@ func (u *Unbinding) Run(args []string) int {
 	unbindCmdFlag.Parse(args)
 
 	if unbindCmdFlag.NArg() != 1 {
-		fmt.Fprintf(os.Stderr, "unbind takes exactly 1 arg but %d args are given.\n", unbindCmdFlag.NArg())
+		fmt.Fprintf(os.Stderr, "--unbind-port takes exactly 1 arg but %d args are given.\n", unbindCmdFlag.NArg())
 		return 1
 	}
 	portUuid := unbindCmdFlag.Arg(0)
@@ -130,7 +130,7 @@ func (u *Unbinding) Run(args []string) int {
 }
 
 func (u *Unbinding) Synopsis() string {
-	return "unbind <port-uuid>"
+	return "--unbind-port <port-uuid>"
 }
 
 func bindingCommand() (cli.Command, error) {
