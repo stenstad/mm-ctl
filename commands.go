@@ -32,7 +32,7 @@ const CommandName = "mm-ctl"
 func loadConfig() error {
 	midolmanConfigPath := flag.String("config", "/etc/midolman/midolman.conf",
 		"The location of the Midolamn config file")
-	hostConfigPath := flag.String("host-config", "/etc/midonet_host_id.properties",
+	hostConfigPath := flag.String("host-config", "/etc/midolman/host_uuid.properties",
 		"The location of the host UUID config file")
 	flag.Parse()
 
