@@ -16,7 +16,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -191,8 +190,9 @@ func unbinding(portUuid, hostUuid string) error {
 	}
 
 	if port.Data.HostId != hostUuid {
-		return errors.New("The given host ID didn't match with one in NSDB")
-	}
+		fmt.Fprintf(os.Stderr, "Supplied host UUID (%s) didn't match ports host UUID in NSDB (%s). Skipping port update, but deleting vrnMapping if it exists.\n",
+                        hostUuid, port.Data.HostId)
+	} else {
 	port.Data.InterfaceName = ""
 
 	updatedPort, err := json.Marshal(port)
@@ -205,6 +205,7 @@ func unbinding(portUuid, hostUuid string) error {
 	if _, err = client.SetData().ForPathWithData(portPath, updatedPort); err != nil {
 		return err
 	}
+        }
 
 	vrnMappingPath := GetVrnMappingPath(hostUuid, portUuid)
 	var exists bool
@@ -221,7 +222,7 @@ func unbinding(portUuid, hostUuid string) error {
 	}
 	if exists {
 		if err = client.Delete().ForPath(vrnMappingPath); err != nil {
-			fmt.Fprintf(os.Stderr, "Error on deleging vrnMapping %s: %s\n",
+			fmt.Fprintf(os.Stderr, "Error on deleting vrnMapping %s: %s\n",
 				vrnMappingPath, err.Error())
 			return err
 		}
